@@ -8,7 +8,7 @@
   <script type="text/javascript" src="lib/jasmine-1.1.0/jasmine-html.js"></script>
 
   <!-- include source files here... -->
-  <script type="text/javascript" src="nowjs/now.js"></script>
+  <script type="text/javascript" src="../../lib/now.js"></script>
   <script type="text/javascript" src="spec/SpecHelper.js"></script>
   
   <!-- include spec files here... -->
@@ -18,10 +18,32 @@
 <body>
 
 <script type="text/javascript">
-  now.ready(function(){
-    jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-    jasmine.getEnv().execute();
-  });
+  (function() {
+    var jasmineEnv = jasmine.getEnv();
+    jasmineEnv.updateInterval = 1000;
+
+    var trivialReporter = new jasmine.TrivialReporter();
+
+    jasmineEnv.addReporter(trivialReporter);
+
+    jasmineEnv.specFilter = function(spec) {
+      return trivialReporter.specFilter(spec);
+    };
+
+    var currentWindowOnload = window.onload;
+
+    window.onload = function() {
+      if (currentWindowOnload) {
+        currentWindowOnload();
+      }
+       execJasmine();
+    };
+
+    function execJasmine() {
+      jasmineEnv.execute();
+    }
+
+  })();
 </script>
 
 </body>
